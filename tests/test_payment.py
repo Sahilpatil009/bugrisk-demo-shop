@@ -32,3 +32,8 @@ def test_charging_twice_only_charges_once():
     payment.charge_order(db, gateway, "o1")
     payment.charge_order(db, gateway, "o1")
     assert len(gateway.charges) == 1
+
+
+def test_receipt_format():
+    order = Order("o1", "u1", 1999, status="PAID")
+    assert payment.format_receipt(order) == "Receipt o1 | user u1 | $19.99 | PAID"

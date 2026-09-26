@@ -1,5 +1,5 @@
-"""Payment module (v2): validate the order before charging."""
-from shop.database import Database
+"""Payment module (v3): audit logging and receipt formatting."""
+from shop.database import Database, Order
 from shop.gateway import FakeGateway
 
 
@@ -12,4 +12,10 @@ def charge_order(db: Database, gateway: FakeGateway, order_id: str):
     gateway.charge(order_id, order.amount_cents)
     order.status = "PAID"
     db.save_order(order)
+    db.log_event(f"charged {order_id}: {order.amount_cents} cents")
     return order
+
+
+def format_receipt(order: Order) -> str:
+    dollars = order.amount_cents / 100
+    return f"Receipt {order.order_id} | user {order.user_id} | ${dollars:.2f} | {order.status}"
