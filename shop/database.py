@@ -12,6 +12,8 @@ class Order:
     amount_cents: int          # money is stored as integer cents (no float errors)
     status: str = "PENDING"
     refunded_cents: int = 0
+    fee_cents: int = 0         # processing fee charged to the merchant
+    currency: str = "USD"
 
 
 class Database:
@@ -26,6 +28,9 @@ class Database:
         if order_id not in self._orders:
             raise KeyError(f"unknown order: {order_id}")
         return self._orders[order_id]
+
+    def orders_for_user(self, user_id: str) -> List[Order]:
+        return [o for o in self._orders.values() if o.user_id == user_id]
 
     def log_event(self, message: str) -> None:
         self._events.append(message)
